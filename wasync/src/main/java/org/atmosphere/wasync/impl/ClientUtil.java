@@ -30,6 +30,7 @@ public class ClientUtil {
     private static final String WASYNC_USER_AGENT = "wAsync/2.0";
 
     public final static AsyncHttpClient createDefaultAsyncHttpClient(Options o) {
+<<<<<<< c5c6c287d770ee7f5f40e4e8561956213ed539d9
 		return createDefaultAsyncHttpClient(o.requestTimeoutInSeconds());
 	}
 
@@ -39,6 +40,27 @@ public class ClientUtil {
 				.setReadTimeout(requestTimeoutInSeconds == -1 ? requestTimeoutInSeconds : requestTimeoutInSeconds * 1000).setUserAgent(WASYNC_USER_AGENT);
 		return new DefaultAsyncHttpClient(b.build());
 	}
+=======
+    	NettyAsyncHttpProviderConfig nettyConfig = new NettyAsyncHttpProviderConfig();
+        nettyConfig.addProperty("child.tcpNoDelay", "true");
+        nettyConfig.addProperty("child.keepAlive", "true");
+        return createDefaultAsyncHttpClient(o.requestTimeoutInSeconds(), nettyConfig);  
+    }
+    
+    public final static AsyncHttpClient createDefaultAsyncHttpClient(Options o, AsyncHttpProviderConfig asyncHttpProviderConfig) {
+        return createDefaultAsyncHttpClient(o.requestTimeoutInSeconds(), asyncHttpProviderConfig);  
+    }
+    
+    public final static AsyncHttpClient createDefaultAsyncHttpClient(int requestTimeoutInSeconds, AsyncHttpProviderConfig asyncHttpProviderConfig) {
+        AsyncHttpClientConfig.Builder b = new AsyncHttpClientConfig.Builder();
+        b.setFollowRedirect(true).setConnectTimeout(-1)
+                .setReadTimeout(requestTimeoutInSeconds == -1 ? requestTimeoutInSeconds : requestTimeoutInSeconds * 1000)
+                .setUserAgent(WASYNC_USER_AGENT)
+                .setUseProxySelector(true);
+        AsyncHttpClientConfig config = b.setAsyncHttpClientProviderConfig(asyncHttpProviderConfig).build();
+        return new AsyncHttpClient(config);
+    }
+>>>>>>> Use proxy selector with websockets
        
     public static Socket create(Options options) {
         return create(options, DefaultSocket.class);

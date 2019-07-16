@@ -60,8 +60,23 @@ public class WebSocketLoader {
 
         for (int r = 0; r < run; r++) {
 
+<<<<<<< c5c6c287d770ee7f5f40e4e8561956213ed539d9
         	DefaultAsyncHttpClientConfig.Builder b = new DefaultAsyncHttpClientConfig.Builder();
 			b.setFollowRedirect(true).setConnectTimeout(-1).setReadTimeout(-1).setUserAgent("loader/1.1").setTcpNoDelay(true).setKeepAlive(true);
+=======
+            AsyncHttpClientConfig.Builder b = new AsyncHttpClientConfig.Builder();
+            b.setFollowRedirect(true)
+                    .setConnectTimeout(-1)
+                    .setReadTimeout(-1)
+                    .setUserAgent("loader/1.1")
+                    .setUseProxySelector(true);
+
+
+            NettyAsyncHttpProviderConfig nettyConfig = new NettyAsyncHttpProviderConfig();
+
+            nettyConfig.addProperty("child.tcpNoDelay", "true");
+            nettyConfig.addProperty("child.keepAlive", "true");
+>>>>>>> Use proxy selector with websockets
 
             final AsyncHttpClient c = new DefaultAsyncHttpClient(b.build());
             Client client = ClientFactory.getDefault().newClient();
