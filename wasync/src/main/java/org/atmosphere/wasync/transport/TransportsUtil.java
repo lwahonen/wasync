@@ -15,10 +15,6 @@
  */
 package org.atmosphere.wasync.transport;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.atmosphere.wasync.Decoder;
 import org.atmosphere.wasync.Event;
 import org.atmosphere.wasync.Function;
@@ -28,6 +24,10 @@ import org.atmosphere.wasync.ReplayDecoder;
 import org.atmosphere.wasync.util.TypeResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TransportsUtil {
 
@@ -172,11 +172,16 @@ public class TransportsUtil {
                         return l;
                     }
 
+                    List<Object> newDecodedObjects = new ArrayList<>();
                     for (Object m : l) {
-                    	return matchDecoder(e, m, nd, decodedObjects);
+                        List<Object> decodedResults = matchDecoder(e, m, nd, decodedObjects);
+                        if ( !decodedResults.isEmpty()) {
+                            newDecodedObjects.add(decodedResults.get( decodedResults.size()-1));
+                        }
                     }
-                   
-		} else if (decoded != null) {
+                    return newDecodedObjects;
+
+                } else if (decoded != null) {
                     logger.trace("Decoder {} match {}", d, instanceType);
                     decodedObjects.add(decoded);
                 }
