@@ -25,9 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.asynchttpclient.AsyncHandler;
-import org.asynchttpclient.ListenableFuture;
-import org.asynchttpclient.RequestBuilder;
+import org.asynchttpclient.*;
 import org.asynchttpclient.ws.WebSocket;
 import org.asynchttpclient.ws.WebSocketListener;
 import org.atmosphere.wasync.Event;
@@ -152,8 +150,11 @@ public class DefaultSocket implements Socket {
             if (transportInUse.name().equals(Request.TRANSPORT.WEBSOCKET)) {
                 r.setUrl(webSocketUrl(request.uri()));
                 try {
+                    org.asynchttpclient.Request build=r.build();
+                    AsyncHttpClient runtime=options.runtime();
+                    BoundRequestBuilder boundRequestBuilder= runtime.prepareRequest(build);
                     transportInUse.future(new FutureProxy<ListenableFuture>(this,
-                            options.runtime().prepareRequest(r.build()).execute((AsyncHandler<WebSocket>) transportInUse)));
+                            boundRequestBuilder.execute((AsyncHandler<WebSocket>) transportInUse)));
 
                     logger.trace("WebSocket Connect Timeout {}", timeout);
                     f.get(timeout, tu);
@@ -180,8 +181,11 @@ public class DefaultSocket implements Socket {
                 }
             } else {
 	            r.setUrl(httpUrl(request.uri()));
+                org.asynchttpclient.Request build=r.build();
+                AsyncHttpClient runtime=options.runtime();
+                BoundRequestBuilder boundRequestBuilder=runtime.prepareRequest(build);
                 transportInUse.future(new FutureProxy<ListenableFuture>(this,
-                        options.runtime().prepareRequest(r.build()).execute((AsyncHandler<String>) transportInUse)));
+                        boundRequestBuilder.execute((AsyncHandler<String>) transportInUse)));
 
                 logger.debug("Http Connect Timeout {}", timeout);
                 try {
